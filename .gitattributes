@@ -1,0 +1,8 @@
+Models/VGG16_Occupations.Keras filter=lfs diff=lfs merge=lfs -text
+Models/Xception_Piece.Keras filter=lfs diff=lfs merge=lfs -text
+Chess[[:space:]]Board[[:space:]]Recognition.ipynb filter=lfs diff=lfs merge=lfs -text
+Chess_Board_Recognition.ipynb filter=lfs diff=lfs merge=lfs -text
+.ipynb_checkpoints/Chess_Board_Recognition.ipynb filter=lfs diff=lfs merge=lfs -text
+.ipynb_checkpoints/Chess[[:space:]]Board[[:space:]]Recognition.ipynb filter=lfs diff=lfs merge=lfs -text
+*.keras filter=lfs diff=lfs merge=lfs -text
+*.ipynb filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,21 @@
+2
+https://www.chess.com/game/live/106586880451?username=oscar1618
+432 8 1504 21 440 1057 1476 1066
+1. e4 d6
+2. Nf3 g6
+3. d4 Bg7
+4. Nc3 Nf6
+5. Be3 Ng4
+6. Bg5 O-O
+7. Qd2 Re8
+8. h3 Nf6
+9. O-O-O Nbd7
+10. Kb1 b6
+11. h4 c5
+12. d5 a6
+13. h5 b5
+14. hxg6 fxg6
+15. Bh6 Bh8
+16. Ne2 Nxe4
+17. Qe3 Nef6
+18. Qe6# 1-0
