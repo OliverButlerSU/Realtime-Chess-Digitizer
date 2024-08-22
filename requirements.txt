@@ -1,0 +1,10 @@
+numpy==1.24.4
+opencv-python==4.9.0.80
+matplotlib==3.7.4
+tensorflow==2.10
+python-chess==1.999
+scikit-learn==1.4.1
+chess~=1.10.0
+scipy~=1.12.0
+pygrabber~=0.2
+ipython~=8.21.0
