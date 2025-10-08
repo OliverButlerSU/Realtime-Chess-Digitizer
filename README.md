@@ -40,7 +40,7 @@ Realtime-Chess-Digitizer/
 **├── Test Images/**  
 **│ ├── Chess Board Recognition** # Images of chessboards for testing recogntion  
 **│ ├── Chess Games/** # Holds raw images of chess games with a moves.txt file  
-**│ ├── Chess Pieces Recognition/** Images used to train CNN models for both piece class and occupancy
+**│ ├── Chess Pieces Recognition/** Images used to train CNN models for both piece class and occupancy  
 **├── BoardGUI.py** # Holds (bad) code for drawing GUI  
 **├── Camera.py** # Holds code for controlling camera operations  
 **├── ChessAI.py** # Code that the chess AI uses to calculate best moves  
