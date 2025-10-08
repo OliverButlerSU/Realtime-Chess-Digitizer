@@ -3,19 +3,38 @@ import pygame
 import chess
 import operator as op
 
+"""
+Handles all visual interaction and manipulation of the chessboard using Pygame.
+It allows:
+- Drawing the board and pieces
+- Handling piece selection and dragging
+- Executing moves (including promotions)
+- Updating board state manually
+- Validating custom board setups
+"""
 class BoardGUI:
 
-    selected_piece = None
-    is_dragging = False
-    selected_piece_location = 0
-    selected_piece_row = -1
-    selected_piece_col = -1
+    selected_piece = None # Piece that is selected by mouse
+    is_dragging = False # Is the mouse currently dragging
+    selected_piece_location = 0 # Integer between 0-63 calculated using ((7 - row) * 8 + col)
+    selected_piece_row = -1 # Integer between 0-7
+    selected_piece_col = -1 # Integer between 0-7
 
     def __init__(self, board):
+        """
+        Initialize the Board GUI with a given chess.Board() instance.
+        """
         self.board = board
         self.load_piece_images()
 
+
     def update_selected_piece(self, mouse_pos, piece):
+        """
+        Sets the piece to be moved when the player clicks on it.
+
+        :param mouse_pos: (x, y) position of the mouse.
+        :param piece: chess.Piece object that was clicked.
+        """
         x, y = mouse_pos
         square_size = 75
         square_offset = 60
@@ -23,6 +42,7 @@ class BoardGUI:
         row = (y - square_offset) // square_size
         col = (x - square_offset) // square_size
 
+        # Prevent selecting opponent’s pieces
         if(piece.color != self.board.turn): return
 
         self.selected_piece_location = ((7 - row) * 8 + col)
@@ -32,12 +52,18 @@ class BoardGUI:
         self.selected_piece_col = col
 
     def draw_dragged_piece(self, screen, mouse_pos):
+        """
+        Draw the selected piece following the mouse cursor while dragging.
+        """
         if(self.is_dragging):
             piece_image = self.get_piece_from_image(self.selected_piece)
             piece_rect = piece_image.get_rect(center=mouse_pos)
             screen.blit(piece_image, piece_rect)
 
     def remove_selected_piece(self):
+        """
+        Reset selection state after releasing mouse
+        """
         self.is_dragging = False
         self.selected_piece = None
         self.selected_piece_location = 0
@@ -45,8 +71,12 @@ class BoardGUI:
         self.selected_piece_col = -1
 
     def try_play_move(self, mouse_pos):
+        """
+        Attempt to play a move when the piece is released.
+        """
         try:
             if (self.is_dragging):
+                # Get mouse position
                 x, y = mouse_pos
                 square_size = 75
                 square_offset = 60
@@ -57,7 +87,7 @@ class BoardGUI:
                 original_square = self.selected_piece_location
                 new_square = ((7 - row) * 8 + col)
 
-
+                # Handle pawn promotion (when reaching last rank)
                 if ((self.board.piece_at(original_square).symbol() == "P" or self.board.piece_at(original_square).symbol() == "p") and (row == 0 or row == 7)):
                     piece_choice = easygui.choicebox("Click the promoted piece type:", "Promotion pieces",
                                                      ["Knight", "Bishop", "Rook", "Queen"])
@@ -67,6 +97,7 @@ class BoardGUI:
 
                     if(move in self.board.legal_moves): self.board.push(move)
                 else:
+                    # Handle normal move
                     move = self.board.find_move(original_square, new_square)
                     if (move in self.board.legal_moves): self.board.push(move)
         except Exception:
@@ -76,6 +107,9 @@ class BoardGUI:
 
 
     def load_piece_images(self):
+        """
+        Preload and map chess piece images for both colors.
+        """
         black_pawn = pygame.image.load(r"Assets/Chess Pieces/Chess_pdt60.png")
         black_knight = pygame.image.load(r"Assets/Chess Pieces/Chess_ndt60.png")
         black_bishop = pygame.image.load(r"Assets/Chess Pieces/Chess_bdt60.png")
@@ -106,10 +140,19 @@ class BoardGUI:
         }
 
     def get_piece_from_image(self, piece):
+        """
+        Return the corresponding image for the given chess piece.
+        """
         return self.piece_images[(piece.piece_type, piece.color)]
 
 
     def get_board_background(self, screen, board = None):
+        """
+        Draw the chessboard grid and all visible pieces.
+
+        :param screen: Pygame surface to render on.
+        :param board: Optional chess.Board() state to render if not a default game
+        """
         if board is not None: self.board = board
 
         square_size = 75
@@ -117,22 +160,26 @@ class BoardGUI:
 
         for row in range(8):
             for col in range(8):
+                # Alternate light and dark squares
                 if ((row+col) % 2 == 0):
                     square_color = (236,219,180)
                 else:
                     square_color = (180,140,100)
 
                 square = (col * square_size + square_offset, row * square_size + square_offset, square_size, square_size)
-
                 pygame.draw.rect(screen, square_color, square)
-
                 piece = self.board.piece_at((7 - row) * 8 + col)
+
+                # Draw piece image if square is occupied
                 if piece is not None and not (self.selected_piece_row == row and self.selected_piece_col == col):
                     piece_image = self.get_piece_from_image(piece)
                     piece_rect = piece_image.get_rect(center=(col * square_size + square_offset + (square_size/2), row * square_size + square_offset + (square_size/2)))
                     screen.blit(piece_image, piece_rect)
 
     def check_for_input(self, mouse_pos):
+        """
+        Check if the mouse position is hovering on the board
+        """
         x, y = mouse_pos
         square_size = 75
         square_offset = 60
@@ -140,6 +187,9 @@ class BoardGUI:
         return (x > square_offset and x <=8*square_size + square_offset and y > square_offset and y <= 8*square_size + square_offset)
 
     def get_piece_on_board(self, mouse_pos):
+        """
+        Get the current piece at the mouse position
+        """
         x, y = mouse_pos
         square_size = 75
         square_offset = 60
@@ -150,6 +200,9 @@ class BoardGUI:
         return row, col, self.board.piece_at((7-row) *8 + col)
 
     def update_piece_board(self, mouse_pos, fen_info = ("w", "KQkq", "-", "0", "0")):
+        """
+
+        """
         row, col, piece = self.get_piece_on_board(mouse_pos)
 
         piece_board = self.get_piece_board_from_game_board()
@@ -245,6 +298,15 @@ class BoardGUI:
         # Calculate if the board setup is valid
 
     def is_board_valid(self):
+        """
+        Check if the current board setup is valid according to chess rules:
+        - Max 32 total pieces
+        - Max 16 per color
+        - Exactly 1 king per color
+        - ≤ 8 pawns per color
+        - No pawns on first/last rank
+        """
+
         occ_board = self.get_occ_board_from_game_board()
         piece_board = self.get_piece_board_from_game_board()
 
@@ -293,14 +355,17 @@ class BoardGUI:
 
         return True
 
-        # Get the occurrence of a piece from a board
 
     def get_occurance_of_piece(self, piecename, board):
+        """
+        Get the occurrence of a piece from a board
+        """
         return sum(list(map(lambda row: op.countOf(row, piecename), board)))
 
-        # Get the occurrence of a piece color from a board
-
     def get_occurance_of_piece_colour(self, board):
+        """
+        Get the occurrence of a piece color from a board
+        """
         black = 0
         white = 0
         for row in range(8):
@@ -314,6 +379,9 @@ class BoardGUI:
         # Check if the pawns are on a valid rank
 
     def check_if_pawns_are_on_valid_ranks(self, board):
+        """
+        Check if pawns are on a valid rank between 0-7
+        """
         for col in range(8):
             # Pawns cannot be on the 1st or 8th rank
             if (board[0][col].lower() == 'p'):
@@ -322,9 +390,10 @@ class BoardGUI:
                 return False
         return True
 
-        # Get the number of all pieces
-
     def get_number_of_all_pieces(self, board):
+        """
+        Get the number of all pieces
+        """
         num_b_king = self.get_occurance_of_piece('k', board)
         num_w_king = self.get_occurance_of_piece('K', board)
         num_b_bishop = self.get_occurance_of_piece('b', board)
